@@ -1,23 +1,9 @@
 import { NextResponse } from 'next/server'
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-const openai = new OpenAIApi(configuration);
-
-const chatMessages = [
-  {
-    role: 'system',
-    content: 'You are a helpful assistant'
-  },
-  {
-    role: 'user',
-    content: ''
-  }
-]
-
 
 export async function POST(request) {
   const geoURL = 'http://api.openweathermap.org/geo/1.0/direct?q='
@@ -37,16 +23,39 @@ export async function POST(request) {
   const date = new Date(weatherData.dt * 1000)
   console.log(date.toString())
 
-  const completion = await openai.createChatCompletion({
+  // {role: 'user', content: 'message'}
+
+  const chatMessages = [
+    {
+      role: 'system',
+      content: 'You are a helpful assistant'
+    },
+    {
+      role: 'user',
+      content: `
+        Hello there. I need some fashion advice on what to wear based upon the current weather.
+        The time is ${date.toLocaleTimeString()}. I'm in ${geoData[0].name}, ${geoData[0].state}.
+        The weather description is ${weatherData.weather[0].description}. The temperature is
+        ${Math.ceil(weatherData.main.temp)} degrees in Fahrenheit. The humidity is ${weatherData.main.humidity} 
+        percent. The wind speed is ${Math.ceil(weatherData.wind.speed)} mph. Also what colors should I wear?
+      `
+    }
+  ]
+
+// Hello there. I need some fashion advice on what to wear based upon the
+// current weather.The time is 11: 59: 28 PM. I'm in Tulsa, Oklahoma.
+// The weather description is clear sky. The temperature is 77 degrees
+// in Fahrenheit.The humidity is 63 percent.Also what colors should I wear ?
+
+  const completion = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
-    messages: [],
-    // {role: 'user', content: 'message'}
+    messages: chatMessages,
     temperature: 0.7,
   });
+  
   // console.log(completion.data.choices[0].message)
 
-
-  return NextResponse.json({message: `You sent in ${body.input}`, weather: weatherData})
+  return NextResponse.json({input: `You sent in ${body.input}`, weather: weatherData, geo: geoData, messages: chatMessages, completion})
 }
 
 

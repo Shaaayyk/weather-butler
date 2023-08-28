@@ -16,7 +16,7 @@ export default function Home() {
       body: JSON.stringify({input})
     })
     const data = await response.json()
-    console.log(data)
+    console.dir(data)
     setResult(data.weather)
     setInput('')
   }
