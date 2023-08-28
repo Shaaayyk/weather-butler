@@ -42,32 +42,11 @@ export async function POST(request) {
     }
   ]
 
-// Hello there. I need some fashion advice on what to wear based upon the
-// current weather.The time is 11: 59: 28 PM. I'm in Tulsa, Oklahoma.
-// The weather description is clear sky. The temperature is 77 degrees
-// in Fahrenheit.The humidity is 63 percent.Also what colors should I wear ?
-
   const completion = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: chatMessages,
     temperature: 0.7,
   });
   
-  // console.log(completion.data.choices[0].message)
-
   return NextResponse.json({input: `You sent in ${body.input}`, weather: weatherData, geo: geoData, messages: chatMessages, completion})
 }
-
-
-// http://api.openweathermap.org/geo/1.0/direct?
-// q = { city name }, { state code }, { country code }
-//  & limit={ limit }& appid={API key }
-
-
-// https://api.openweathermap.org/data/3.0/onecall?
-// lat = { lat } & lon={ lon }
-// & exclude={ part }& appid={API key }
-
-// api.openweathermap.org/data/2.5/forecast/daily?
-// lat = { lat } & lon={ lon }
-// & cnt={ cnt }& appid={API key }
