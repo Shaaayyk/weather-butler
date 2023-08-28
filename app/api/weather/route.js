@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server'
-import OpenAI from 'openai';
 import { getGeoData, getLatAndLon, getWeatherData } from '../../../utils/weather'
 import { initChatMessages } from '../../../utils/messages';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export async function POST(request) {
   // grab the input from the user submitting their location
@@ -19,6 +14,6 @@ export async function POST(request) {
   const weatherData = await getWeatherData(latAndLon.lat, latAndLon.lon)
   // the openai request needs info from both objects for the prompt we use
   const completion = await initChatMessages(geoData, weatherData)
-  
-  return NextResponse.json({input: `You sent in ${body.input}`, weather: weatherData, geo: geoData, messages: completion})
+  // send response from openai and weather data to the user
+  return NextResponse.json({weather: weatherData, messages: completion})
 }
